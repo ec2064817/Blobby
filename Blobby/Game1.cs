@@ -80,9 +80,9 @@ namespace Blobby
 
             if (pad1_curr.Buttons.A == ButtonState.Pressed)
             {
-                for (int i = 0; i < length; i++)
+                for (int i = 0; i < platforms.Count; i++)
                 {
-
+                    _spriteBatch.DrawString(debugFont, "Plat:" + platforms[i].ToString, platforms, Color.White);
                 }
                 
             }
