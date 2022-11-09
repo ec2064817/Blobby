@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 
 namespace Blobby
@@ -10,9 +11,13 @@ namespace Blobby
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        SpinningCoin coin;
+
         SpriteFont debugFont;
 
         GamePadState pad1_curr;
+
+        public static readonly Random RNG = new Random();
 
         StaticGraphic background;
         List<FloatingPlatform> platforms;
@@ -54,6 +59,9 @@ namespace Blobby
             platforms.Add(new FloatingPlatform(Content.Load<Texture2D>("platform"), 240, 60));
             platforms.Add(new FloatingPlatform(Content.Load<Texture2D>("platform"), 200, 155));
             platforms.Add(new FloatingPlatform(Content.Load<Texture2D>("platform"), 250, 150));
+
+            coin = new SpinningCoin(Content.Load<Texture2D>("spinning_coin_gold"), 100, 100, 8, 24);
+            ResetCoin();
         }
 
         protected override void Update(GameTime gameTime)
@@ -64,6 +72,15 @@ namespace Blobby
             pad1_curr = GamePad.GetState(PlayerIndex.One);
 
             base.Update(gameTime);
+        }
+
+        private void ResetCoin()
+        {
+            int chosenPlatform = RNG.Next(platforms.Count);
+
+            coin.MoveTo(
+                platforms[chosenPlatform].Surface.Center.X - 8,
+                platforms[chosenPlatform].Surface.Top - 16);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -82,10 +99,12 @@ namespace Blobby
             {
                 for (int i = 0; i < platforms.Count; i++)
                 {
-                    _spriteBatch.DrawString(debugFont, "Plat:" + platforms[i].ToString, platforms, Color.White);
+                    _spriteBatch.DrawString(debugFont, "Plat:" + platforms[i].ToString() + "\n" + platforms[i].m_pos.ToString(), platforms[i].m_pos, Color.White);
                 }
                 
             }
+
+            coin.DrawMe(_spriteBatch, gameTime);
                 _spriteBatch.End();
 
             base.Draw(gameTime);
