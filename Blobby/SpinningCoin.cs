@@ -12,6 +12,7 @@ namespace Blobby
     {
         private Texture2D m_SpriteSheet;
         private Vector2 m_Pos;
+        public Rectangle CollRect;
 
         private Rectangle m_animCell;
 
@@ -25,12 +26,16 @@ namespace Blobby
             m_Pos = new Vector2(xpos, ypos);
             m_frameTimer = 1;
             m_fps = fps;
+            CollRect = new Rectangle(xpos, ypos, spriteSheet.Width / frameCount, spriteSheet.Height);
         }   
 
         public void MoveTo(int xpos, int ypos)
         {
             m_Pos.X = xpos;
             m_Pos.Y = ypos;
+
+            CollRect.X = (int)m_Pos.X;
+            CollRect.Y = (int)m_Pos.Y;
         }
 
         public void DrawMe(SpriteBatch sb, GameTime gt)

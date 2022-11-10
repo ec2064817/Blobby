@@ -12,6 +12,7 @@ namespace Blobby
         private SpriteBatch _spriteBatch;
 
         SpinningCoin coin;
+        Baddie badguy;
 
         SpriteFont debugFont;
 
@@ -21,6 +22,9 @@ namespace Blobby
 
         StaticGraphic background;
         List<FloatingPlatform> platforms;
+
+        const int Leafs = 32;
+        Leaf[] _leaf;
 
         public Game1()
         {
@@ -34,7 +38,7 @@ namespace Blobby
 
         protected override void Initialize()
         {
-            
+            _leaf = new Leaf[Leafs];
 
             base.Initialize();
         }
@@ -60,6 +64,14 @@ namespace Blobby
             platforms.Add(new FloatingPlatform(Content.Load<Texture2D>("platform"), 200, 155));
             platforms.Add(new FloatingPlatform(Content.Load<Texture2D>("platform"), 250, 150));
 
+            for (int i = 0; i < Leafs; i++)
+            {
+                _leaf[i] = new Leaf(Content.Load<Texture2D>("tinyleaf"), _graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+            }
+
+            badguy = new Baddie(Content.Load<Texture2D>("baddieball"), _graphics.PreferredBackBufferWidth - 32, 100, 0.5f);
+
+
             coin = new SpinningCoin(Content.Load<Texture2D>("spinning_coin_gold"), 100, 100, 8, 24);
             ResetCoin();
         }
@@ -69,7 +81,15 @@ namespace Blobby
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            for (int i = 0; i < _leaf.Length; i++)
+            {
+                _leaf[i].UpdateMe(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight);
+
+            }
+
             pad1_curr = GamePad.GetState(PlayerIndex.One);
+
+            badguy.UpdateMe(coin);
 
             base.Update(gameTime);
         }
@@ -95,17 +115,25 @@ namespace Blobby
                 platforms[i].DrawMe(_spriteBatch);
             }
 
-            if (pad1_curr.Buttons.A == ButtonState.Pressed)
+            if (Keyboard.GetState().IsKeyDown(Keys.Back))
             {
                 for (int i = 0; i < platforms.Count; i++)
                 {
-                    _spriteBatch.DrawString(debugFont, "Plat:" + platforms[i].ToString() + "\n" + platforms[i].m_pos.ToString(), platforms[i].m_pos, Color.White);
+                    _spriteBatch.DrawString(debugFont, "Plat:" + i.ToString() + "\n" + platforms[i].m_pos.ToString() + "\n" + "W" + platforms[i].m_txr.Width.ToString() + "H" + platforms[i].m_txr.Height.ToString(), platforms[i].m_pos, Color.White);
                 }
                 
             }
 
+            badguy.DrawMe(_spriteBatch);
+
             coin.DrawMe(_spriteBatch, gameTime);
-                _spriteBatch.End();
+
+            for (int i = 0; i < _leaf.Length; i++)
+            {
+                _leaf[i].DrawMe(_spriteBatch);
+            }
+
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }

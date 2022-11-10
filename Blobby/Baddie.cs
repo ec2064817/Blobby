@@ -14,6 +14,9 @@ namespace Blobby
         private Vector2 m_pos;
 
         private float m_baseSpeed;
+        private Vector2 m_vel;
+
+        public Rectangle CollRect;
 
         public Baddie(Texture2D txr, int xpos, int ypos, float baseSpeed)
         {
@@ -21,6 +24,25 @@ namespace Blobby
             m_pos = new Vector2(xpos, ypos);
 
             m_baseSpeed = baseSpeed;
+            m_vel = Vector2.Zero;
+
+            CollRect = new Rectangle(xpos, ypos, txr.Width, txr.Height);
+        }
+
+        public void UpdateMe(SpinningCoin target)
+        {
+            CollRect.X = (int)m_pos.X;
+            CollRect.Y = (int)m_pos.Y;
+
+            m_vel.X = target.CollRect.Center.X - this.CollRect.Center.X;
+            m_vel.Y = target.CollRect.Center.Y - this.CollRect.Center.Y;
+            m_vel.Normalize();
+
+            m_vel *= m_baseSpeed;
+
+            m_pos += m_vel;
+
+            
         }
 
         public void DrawMe(SpriteBatch sb)
