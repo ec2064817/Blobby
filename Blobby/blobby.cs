@@ -19,6 +19,9 @@ namespace Blobby
 
         private const int collBorder = 4;
 
+        private const int FOOTMARGIN = 3;
+        private Rectangle m_feetPos;
+
         public blobby(Texture2D standSprite, int xpos, int ypos)
         {
             m_StandingSprite = standSprite;
@@ -28,9 +31,14 @@ namespace Blobby
             m_vel = Vector2.Zero;
 
             CollRect = new Rectangle(xpos, ypos, standSprite.Width, standSprite.Height);
+
+            m_feetPos = new Rectangle(CollRect.X + FOOTMARGIN,
+                CollRect.Y + CollRect.Height - 2, 
+                CollRect.Width - (FOOTMARGIN*2),
+                2);
         }
 
-        public void UpdateMe(KeyboardState kb, Rectangle screenSize)
+        public void UpdateMe(KeyboardState kb, Rectangle screenSize, float gravity, int ground, List<FloatingPlatform> plats)
         {
             if(m_pos.X + CollRect.Width < 0)
                 m_pos.X = screenSize.Width - 1;
@@ -51,6 +59,40 @@ namespace Blobby
             CollRect.X = (int)m_pos.X;
             CollRect.Y = (int)m_pos.Y;
 
+            if (CollRect.Bottom < ground)
+            {
+                if (m_vel.Y < gravity * 15)
+                {
+                    m_vel.Y += gravity;
+                }
+
+                for (int i = 0; i < plats.Count; i++)
+                {
+                    if (plats[i].Surface.Intersects(m_feetPos))
+                    {
+                        if (m_vel.Y > 0)
+                        {
+                            m_vel.Y = 0;
+                            m_pos.Y = plats[i].Surface.Top -
+                                CollRect.Height + 1;
+                        }
+                    }
+                }
+                
+            }
+            else
+            {
+                m_vel.Y = 0;
+                m_pos.Y = ground - CollRect.Height;
+            }
+
+            if ((kb.IsKeyDown(Keys.W)) && m_vel.Y == 0) 
+            {
+                m_vel.Y = -5;
+            }
+
+            m_feetPos.X = CollRect.X + FOOTMARGIN;
+            m_feetPos.Y = CollRect.Y + CollRect.Height - 2;  
         }
 
         public void DrawMe(SpriteBatch sb)

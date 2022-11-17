@@ -15,6 +15,9 @@ namespace Blobby
         Baddie badguy;
         blobby p1Char;
 
+        const float GRAVITY = 0.3f;
+        const int GROUNDLEVEL = 233;
+
         SpriteFont debugFont;
 
         KeyboardState kb;
@@ -98,7 +101,12 @@ namespace Blobby
                 ResetCoin();
             }
 
-            p1Char.UpdateMe(kb, GraphicsDevice.Viewport.Bounds);
+            if (coin.CollRect.Intersects(p1Char.CollRect))
+            {
+                ResetCoin();
+            }
+
+            p1Char.UpdateMe(kb, GraphicsDevice.Viewport.Bounds, GRAVITY, GROUNDLEVEL, platforms);
 
             base.Update(gameTime);
         }
