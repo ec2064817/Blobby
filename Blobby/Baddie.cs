@@ -18,6 +18,8 @@ namespace Blobby
 
         public Rectangle CollRect;
 
+        private const int collBorder = 4;
+
         public Baddie(Texture2D txr, int xpos, int ypos, float baseSpeed)
         {
             m_txr = txr;
@@ -26,13 +28,13 @@ namespace Blobby
             m_baseSpeed = baseSpeed;
             m_vel = Vector2.Zero;
 
-            CollRect = new Rectangle(xpos, ypos, txr.Width, txr.Height);
+            CollRect = new Rectangle(xpos + collBorder, ypos + collBorder, txr.Width - (collBorder * 2), txr.Height - (collBorder * 2));
         }
 
         public void UpdateMe(SpinningCoin target)
         {
-            CollRect.X = (int)m_pos.X;
-            CollRect.Y = (int)m_pos.Y;
+            CollRect.X = (int)m_pos.X + collBorder;
+            CollRect.Y = (int)m_pos.Y + collBorder;
 
             m_vel.X = target.CollRect.Center.X - this.CollRect.Center.X;
             m_vel.Y = target.CollRect.Center.Y - this.CollRect.Center.Y;

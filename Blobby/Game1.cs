@@ -13,10 +13,11 @@ namespace Blobby
 
         SpinningCoin coin;
         Baddie badguy;
+        blobby p1Char;
 
         SpriteFont debugFont;
 
-        GamePadState pad1_curr;
+        KeyboardState kb;
 
         public static readonly Random RNG = new Random();
 
@@ -70,6 +71,8 @@ namespace Blobby
             }
 
             badguy = new Baddie(Content.Load<Texture2D>("baddieball"), _graphics.PreferredBackBufferWidth - 32, 100, 0.5f);
+            
+            p1Char = new blobby(Content.Load<Texture2D>("snipe_stand_right"), 0, 100);
 
 
             coin = new SpinningCoin(Content.Load<Texture2D>("spinning_coin_gold"), 100, 100, 8, 24);
@@ -78,8 +81,7 @@ namespace Blobby
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            kb = Keyboard.GetState();
 
             for (int i = 0; i < _leaf.Length; i++)
             {
@@ -87,9 +89,16 @@ namespace Blobby
 
             }
 
-            pad1_curr = GamePad.GetState(PlayerIndex.One);
+            
 
             badguy.UpdateMe(coin);
+
+            if (coin.CollRect.Intersects(badguy.CollRect))
+            {
+                ResetCoin();
+            }
+
+            p1Char.UpdateMe(kb, GraphicsDevice.Viewport.Bounds);
 
             base.Update(gameTime);
         }
@@ -125,6 +134,8 @@ namespace Blobby
             }
 
             badguy.DrawMe(_spriteBatch);
+
+            p1Char.DrawMe(_spriteBatch);
 
             coin.DrawMe(_spriteBatch, gameTime);
 
